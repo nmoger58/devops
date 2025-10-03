@@ -51,3 +51,8 @@ async def delete_task(task_id: int):
         return {"id": task_id, "task": deleted_task}
     return {"error": "Task not found"}
 
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
