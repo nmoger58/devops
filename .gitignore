@@ -1,6 +1,6 @@
 node_modules
 __pycache__
-
+.gitignore
 .env
 .vscode
 .DS_Store
@@ -9,3 +9,4 @@ __pycache__
 *.log
 *.sqlite3
 *.db
+pyvenv.cfg
