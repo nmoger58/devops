@@ -75,7 +75,8 @@ jobs:
       - name: Format frontend code 
         run: |
           cd frontend
-          npx prettier --write "src/**/*.{js,jsx}"
+          npx prettier --check "src/**/*.{js,jsx}"
+        # npx prettier --write "src/**/*.{js,jsx}" should be used to auto-format code
 
       - name: Lint frontend code
         run: |
