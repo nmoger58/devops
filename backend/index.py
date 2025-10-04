@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from os import environ as env
 class TaskModel(BaseModel):
     task: str
 app = FastAPI()
@@ -11,6 +12,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# take from the env
+PORT=env.get("PORT",8000)
+HOST=env.get("HOST", "localhost")
+
 todo_list = {1:"Learn FastAPI",
               2:"Build a REST API",
                 3:"Deploy the API",
@@ -54,5 +59,5 @@ async def delete_task(task_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host=HOST, port=PORT)
 

@@ -2,26 +2,32 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './App.css'
 
+// ✅ Make sure in your .env file you have: VITE_API_BASE_URL=http://localhost:8000
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 const App = () => {
   const [task, setTask] = useState('')
   const [todos, setTodos] = useState([])
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState('')
-  const submitHandler = async(e) => {
+
+  // Add a new todo
+  const submitHandler = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('http://localhost:8000/todo', {task: task})
+      const response = await axios.post(`${API_BASE_URL}/todo`, { task })
       console.log('Todo item added:', response.data)
       setTask('')
-      // Refresh the todo list after adding new item
       fetchTodos()
     } catch (error) {
       console.error('Error adding todo:', error)
     }
   }
-  const fetchTodos = async() => {
+
+  // Fetch todos
+  const fetchTodos = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/todo')
+      const response = await axios.get(`${API_BASE_URL}/todo`)
       setTodos(response.data)
       console.log('Fetched todos:', response.data)
     } catch (error) {
@@ -32,23 +38,27 @@ const App = () => {
   useEffect(() => {
     fetchTodos()
   }, [])
+
+  // Delete a todo
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/todo/${id}`)
+      await axios.delete(`${API_BASE_URL}/todo/${id}`)
       fetchTodos()
     } catch (error) {
       console.error('Error deleting todo:', error)
     }
   }
 
+  // Start editing a todo
   const startEditing = (todo) => {
     setEditingId(todo.id)
     setEditingText(todo.task)
   }
 
+  // Save edited todo
   const submitEdit = async (id) => {
     try {
-      await axios.put(`http://localhost:8000/todo/${id}`, editingText)
+      await axios.put(`${API_BASE_URL}/todo/${id}`, { task: editingText }) // ✅ send as object
       setEditingId(null)
       setEditingText('')
       fetchTodos()
@@ -62,6 +72,7 @@ const App = () => {
       <h1 className="title">Todo App</h1>
       <p className="subtitle">Manage your tasks efficiently</p>
       
+      {/* Add Form */}
       <form onSubmit={submitHandler} className="add-form">
         <input 
           type="text" 
@@ -74,6 +85,7 @@ const App = () => {
         <button type="submit" className="add-button">Add Todo</button>
       </form>
 
+      {/* Todo List */}
       <div className="todo-list">
         {todos.map((todo) => (
           <div key={todo.id} className="todo-item">
