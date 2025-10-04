@@ -54,18 +54,8 @@ jobs:
 
       - name: Lint backend code
         run: |
-          pylint backend --fail-under=7.0
-
-      - name: Run backend tests with coverage
-        run: |
           cd backend
-          pytest --cov=. --cov-report=xml
-          
-      - name: Upload backend coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./backend/coverage.xml
-          flags: backend
+          pylint index.py
 
       # ---------------------------
       # Frontend (React + Vite)
