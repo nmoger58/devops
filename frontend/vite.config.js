@@ -5,6 +5,20 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   preview: {
-   allowedHosts: 'all'
+    allowedHosts: [
+      'devops-4-gh8z.onrender.com',
+      'devops-2-3ugm.onrender.com',
+      'localhost',
+    ]
   },
+  server: {
+    cors: true,
+    proxy: {
+      '/api': {
+        target: 'https://devops-2-3ugm.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })
