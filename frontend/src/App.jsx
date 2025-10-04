@@ -120,7 +120,7 @@ const App = () => {
                     onClick={() => startEditing(todo)}
                     className="edit-button"
                   >
-                    Edits
+                    Editz
                   </button>
                   <button
                     onClick={() => deleteTask(todo.id)}
