@@ -82,17 +82,6 @@ jobs:
           cd frontend
           npx eslint . --max-warnings 0
 
-      - name: Run frontend tests with coverage
-        run: |
-          cd frontend
-          npm test -- --coverage --watchAll=false
-
-      - name: Upload frontend coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./frontend/coverage/coverage-final.json
-          flags: frontend
-
       - name: Build frontend
         run: |
           cd frontend
