@@ -4,7 +4,7 @@ import './App.css'
 
 // ✅ Make sure in your .env file you have: VITE_API_BASE_URL=http://localhost:8000
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-
+// let variable = "this is unused" 
 const App = () => {
   const [task, setTask] = useState('')
   const [todos, setTodos] = useState([])

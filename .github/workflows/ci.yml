@@ -1,0 +1,59 @@
+name : build-and-lint
+
+# triggered whenever the push and pull request are done
+# on the main or any other branch
+
+on:
+  push : 
+     branches : [main,frontend,backend]
+  pull_request:
+     branches : [main,frontend,backend]
+
+# define the jobs
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./backend/requirements.txt
+
+      - name: Lint backend code
+        run: |
+          pip install flake8
+          flake8 ./backend
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: |
+          cd ./frontend
+          npm install
+
+      - name: Lint frontend code
+        run: |
+          cd ./frontend
+          npx eslint .
+
+      - name: Build frontend
+        run: |
+          cd ./frontend
+          npm run build
+
+      - name: Run tests (if any)
+        run: |
+          echo "Add your test commands here"
