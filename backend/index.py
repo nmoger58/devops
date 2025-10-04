@@ -89,8 +89,7 @@ async def create_task(task: TaskModel):
     return {
         "id": new_id, 
         "task": task.task
-        
-
+    }}
 
 @app.put("/todo/{task_id}")
 async def update_task(task_id: int, task: str):
