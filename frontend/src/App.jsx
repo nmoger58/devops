@@ -109,7 +109,7 @@ const App = () => {
                   onClick={() => setEditingId(null)}
                   className="cancel-button"
                 >
-                  Cancel
+                  Abort
                 </button>
               </div>
             ) : (
