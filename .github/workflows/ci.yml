@@ -72,10 +72,11 @@ jobs:
           cd frontend
           npm ci
 
-      - name: Format frontend code
+      - name: Format frontend code 
         run: |
           cd frontend
           npx prettier --check "src/**/*.{js,jsx}"
+        # npx prettier --write "src/**/*.{js,jsx}" should be used to auto-format code
 
       - name: Lint frontend code
         run: |
