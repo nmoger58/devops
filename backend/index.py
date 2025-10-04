@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from os import environ as env
+
+
 class TaskModel(BaseModel):
     task: str
+
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -12,30 +16,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# take from the env
-PORT=env.get("PORT",8000)
-HOST=env.get("HOST", "localhost")
 
-todo_list = {1:"Learn FastAPI",
-              2:"Build a REST API",
-                3:"Deploy the API",
-                4:"Celebrate Success!"
-              }
+# Environment variables
+PORT = env.get("PORT", 8000)
+HOST = env.get("HOST", "localhost")
+
+todo_list = {
+    1: "Learn FastAPI",
+    2: "Build a REST API",
+    3: "Deploy the API",
+    4: "Celebrate Success!"
+}
+
 
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
 
+
 @app.get("/todo/{task_id}")
 async def read_task(task_id: int):
     return {"task": todo_list.get(task_id, "Task not found")}
+
 
 @app.get("/todo")
 async def read_all_tasks():
     return [{"id": k, "task": v} for k, v in todo_list.items()]
 
+
 @app.post("/todo")
-async def create_task(task : TaskModel):
+async def create_task(task: TaskModel):
     new_id = max(todo_list.keys()) + 1 if todo_list else 1
     todo_list[new_id] = task.task
     return {"id": new_id, "task": task.task}
@@ -55,6 +65,8 @@ async def delete_task(task_id: int):
         deleted_task = todo_list.pop(task_id)
         return {"id": task_id, "task": deleted_task}
     return {"error": "Task not found"}
+
+
 
 
 if __name__ == "__main__":
