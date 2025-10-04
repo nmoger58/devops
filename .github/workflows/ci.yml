@@ -5,15 +5,38 @@ on:
     branches: [ "main" , "frontend"]
   pull_request:
     branches: [ "main" , "frontend"]
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  build-and-lint:
+  build-and-test:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.11']
+        node-version: ['20']
 
     steps:
       # Checkout repo
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      # Cache dependencies
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache Node dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       # ---------------------------
       # Backend (FastAPI - Python)
@@ -21,17 +44,32 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install backend dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
+          pip install pylint pytest pytest-cov black
 
-      - name: Lint backend code (flake8)
+      - name: Format backend code
         run: |
-          pip install pylint
-          pylint backend
+          black backend/ --check
+
+      - name: Lint backend code
+        run: |
+          pylint backend --fail-under=8.0
+
+      - name: Run backend tests with coverage
+        run: |
+          cd backend
+          pytest --cov=. --cov-report=xml
+          
+      - name: Upload backend coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/coverage.xml
+          flags: backend
 
       # ---------------------------
       # Frontend (React + Vite)
@@ -39,17 +77,35 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm install
+          npm ci
 
-      - name: Lint frontend code (eslint)
+      - name: Format frontend code
         run: |
           cd frontend
-          npx eslint .
+          npx prettier --check "src/**/*.{js,jsx}"
+
+      - name: Lint frontend code
+        run: |
+          cd frontend
+          npx eslint . --max-warnings 0
+
+      - name: Run frontend tests with coverage
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false
+
+      - name: Upload frontend coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/coverage/coverage-final.json
+          flags: frontend
 
       - name: Build frontend
         run: |
@@ -57,14 +113,30 @@ jobs:
           npm run build
 
       # ---------------------------
-      # Placeholder for tests
+      # Security Scanning
       # ---------------------------
-      - name: Run backend tests
-        run: |
-          echo "Add pytest here if you write backend tests"
-          # Example: pytest --maxfail=1 --disable-warnings -q
+      - name: Run security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
 
-      - name: Run frontend tests
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Add your deployment steps here
+      - name: Deploy application
         run: |
-          echo "Add React tests here"
-          # Example: cd frontend && npm test -- --watchAll=false
+          echo "Add your deployment commands here"
+        # Example for Azure deployment:
+        # uses: azure/webapps-deploy@v2
+        # with:
+        #   app-name: your-app-name
+        #   publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
