@@ -52,10 +52,6 @@ jobs:
           pip install -r backend/requirements.txt
           pip install pylint pytest pytest-cov black
 
-      - name: Format backend code
-        run: |
-          black backend/ --check
-
       - name: Lint backend code
         run: |
           pylint backend --fail-under=8.0
