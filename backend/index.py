@@ -18,7 +18,11 @@ class TaskModel(BaseModel):
     """
     task: str
 
-app = FastAPI()
+app = FastAPI(
+    title="Todo API",
+    description="A simple Todo API with CRUD operations",
+    version="1.0.0"
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
