@@ -3,7 +3,8 @@ import axios from "axios";
 import "./App.css";
 
 // Default to the deployed URL if environment variable is not set
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://devops-3-d99e.onrender.com';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://devops-3-d99e.onrender.com";
 const App = () => {
   const [task, setTask] = useState("");
   const [todos, setTodos] = useState([]);
