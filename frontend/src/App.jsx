@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
-// ✅ Make sure in your .env file you have: VITE_API_BASE_URL=http://localhost:8000
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-// let variable = "this is unused"
+// Default to the deployed URL if environment variable is not set
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://devops-3-d99e.onrender.com";
 const App = () => {
   const [task, setTask] = useState("");
   const [todos, setTodos] = useState([]);
@@ -28,10 +28,16 @@ const App = () => {
   const fetchTodos = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/todo`);
-      setTodos(response.data);
+      if (Array.isArray(response.data)) {
+        setTodos(response.data);
+      } else {
+        console.error("Unexpected response format:", response.data);
+        setTodos([]);
+      }
       console.log("Fetched todos:", response.data);
     } catch (error) {
       console.error("Error fetching todos:", error);
+      setTodos([]);
     }
   };
 
