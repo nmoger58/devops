@@ -3,7 +3,7 @@ import axios from "axios";
 import "./App.css";
 
 // ✅ Make sure in your .env file you have: VITE_API_BASE_URL=http://localhost:8000
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://devops-2-3ugm.onrender.com'
 // let variable = "this is unused"
 const App = () => {
   const [task, setTask] = useState("");
