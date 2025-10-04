@@ -72,7 +72,7 @@ jobs:
           cd frontend
           npm ci
 
-      - name: Format frontend code
+      - name: Format frontend code 
         run: |
           cd frontend
           npx prettier --check "src/**/*.{js,jsx}"
