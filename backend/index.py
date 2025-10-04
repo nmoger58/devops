@@ -107,7 +107,7 @@ async def update_task(task_id: int, task: str):
         return {
             "id": task_id, 
             "task": task}
-    return {"error": "Task not found"
+    return {"error": "Task not found"}}
 
 
 @app.delete("/todo/{task_id}")
